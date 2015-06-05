@@ -10,14 +10,14 @@ var COLORS = [
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
 ];
 
-// Initialize varibles
+// Инициализация переменных
 var $window = $(window);
-var $usernameInput = $('.usernameInput'); // Input for username
-var $messages = $('.messages'); // Messages area
-var $inputMessage = $('.inputMessage'); // Input message input box
+var $usernameInput = $('.usernameInput'); // Input для username
+var $messages = $('.messages'); // Область сообщений
+var $inputMessage = $('.inputMessage'); // Input для ввода сообщений
 
-var $loginPage = $('.login.page'); // The login page
-var $chatPage = $('.chat.page'); // The chatroom page
+var $loginPage = $('.login.page'); // Страница входа/ввода имени
+var $gamePage = $('.game.page'); // Игровая страница
 
 // Prompt for setting a username
 var username;
@@ -29,53 +29,40 @@ var alertUser = false;
 
 var socket = io();
 
-socket.on('id', function(ID) {
-
-});
-
-//var ID = (socket.id).toString().substr(0, 6);
-
-
-// Sets the client's username
+// Присваивание имени пользователю
 function setUsername () {
     username = cleanInput($usernameInput.val().trim());
 
     // If the username is valid
     if (username) {
         $loginPage.fadeOut();
-        $chatPage.show();
+        $gamePage.show();
         $loginPage.off('click');
         $currentInput = $inputMessage.focus();
 
-
-
-
-
-        // Tell the server your username
+        // говорим это серверу
         socket.emit('add user', username);
 
         var Ids = (socket.id).toString().substr(0, 6);
 
         document.getElementById('socketUsernameID').innerHTML = '<b>' + username + '</b>' + ', Ваш ID: ' + Ids;
 
-
-
     }
 
 }
 
-// Prevents input from having injected markup
+// очищаем input
 function cleanInput (input) {
     return $('<div/>').text(input).text();
 }
-// Keyboard events
+// для ввода через клавиатуру
 
 $window.keydown(function (event) {
-    // Auto-focus the current input when a key is typed
+    // ctrl, alt ...
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
         $currentInput.focus();
     }
-    // When the client hits ENTER on their keyboard
+    // enter
     if (event.which === 13) {
         if (username) {
             sendMessage();
@@ -87,27 +74,9 @@ $window.keydown(function (event) {
     }
 });
 
-// Focus input when clicking anywhere on login page
+// focus на input
 $loginPage.click(function () {
     $currentInput.focus();
-});
-
-// Whenever the server emits 'login', log the login message
-socket.on('login', function (data) {
-    connected = true;
-    // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
-    log(message, {
-        prepend: true
-    });
-    addParticipantsMessage(data);
-});
-
-// Whenever the server emits 'user joined', log it in the chat body
-socket.on('user joined', function (data) {
-    log(data.username + ' joined');
-
-    addParticipantsMessage(data);
 });
 
 socket.on('joinResult', function(result) {

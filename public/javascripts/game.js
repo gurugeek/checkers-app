@@ -1,7 +1,3 @@
-
-
-
-
 var size = 8;
 var checkers = [];
 var moves_from_start = 0;
@@ -14,9 +10,6 @@ var empty_checker = {
 	team: "empty",
 	dead: false
 };
-
-    
-
 
 //??? ?????????? ???????? ???????
 var GoldWay70_07 = [{i: 7, j: 0}, {i: 6, j: 1}, {i: 5, j: 2}, {i: 4, j: 3},
