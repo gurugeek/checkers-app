@@ -441,7 +441,10 @@ window.onload = function(){
 				}
 			}
 		}
-		sound();
+		if (startGame){
+			sound();
+		}
+
 	}
 
 	function select_moves(moves){
