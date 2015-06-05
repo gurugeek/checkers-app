@@ -48,16 +48,17 @@ var userteam = {};
 var inroomuser = {};
 var rooms = {};
 var startgame;
-var lastroom;
+var openroom = false;
 
 function joinRoom(socket, room, username) {
 
-  if (flag) {
+  if (flag || openroom) {
     socket.join(freeroom);
     iduser = room;
     userteam[iduser] = 2;
     rooms[room] = freeroom;
     startgame = 1;
+    openroom = false;
     socket.emit('joinResult', {room: rooms[room], userHost: userHost, userteam: userteam[iduser]});
 	socket.emit('userteam', {room: rooms[room], iduser: iduser});
     socket.broadcast.to(freeroom).emit('startgame', {startgame: startgame});
@@ -68,27 +69,21 @@ function joinRoom(socket, room, username) {
     inroomuser[freeroom] = 2;
     console.log('В комнате ' + freeroom + ' ' + inroomuser[freeroom] + ' игрока.')
   } else {
-
     socket.join(room);
-
     iduser = room;
     userteam[iduser] = 1;
     flag = true;
     freeroom = room;
-    lastroom = room;
     rooms[room] = room;
     userHost = username;
     serverUsers[room] = username;
     inroomuser[freeroom] = 1;
-
+    openroom = true;
     console.log(serverUsers[room] + ' создал комнату');
-
     console.log('В комнате ' + room + ' ' + inroomuser[room] + ' игрок.')
-
     socket.emit('joinResult', {room: room, userHost: serverUsers[room], userteam: userteam[iduser]});
 	socket.emit('userteam', {room: rooms[room], iduser: iduser});
     console.log(username + ' играет белыми! Он хозяин-барин)');
-
   }
 
   if (inroomuser[conRoom] == 2) {
@@ -105,12 +100,6 @@ var currentRoom = {};
 io.on('connection', function(socket){
 
   var ID = (socket.id).toString().substr(0, 6);
-
-  /*
-  socket.on('startGame', function(startGame){
-    console.log(startGame);
-  });
-  */
 
   socket.on('disconnect', function () {
     // remove the username from global usernames list
@@ -143,9 +132,9 @@ io.on('connection', function(socket){
   })
 
   socket.on('add user', function (username) {
-    // we store the username in the socket session for this client
+    //
     socket.username = username;
-    // add the client's username to the global list
+    //
 
     usernames[username] = username;
     ++numUsers;
